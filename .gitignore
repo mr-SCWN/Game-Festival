@@ -16,3 +16,9 @@ UserSettings/
 *.suo
 *.sln.iml
 
+Library/
+Logs/
+Temp/
+Build/
+Builds/
+Obj/
