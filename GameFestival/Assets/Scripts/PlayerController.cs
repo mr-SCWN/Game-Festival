@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float moveSpeed = 5f; // Скорость движения
+    public float moveSpeed = 5f; // Movement Speed 
 
     void Update()
     {
