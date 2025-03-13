@@ -1,27 +1,2 @@
-# Ignore auto-generated Unity folders
-[Ll]ibrary/
-[Tt]emp/
-[Oo]bj/
-[Bb]uild/
-[Bb]uilds/
-[Ll]ogs/
-UserSettings/
-
-# Ignore IDE-specific folders
-.vs/
-.vscode/
-
-# Visual Studio cache files
-*.csproj
-*.sln
-*.user
-*.userprefs
-
-# Rider / JetBrains files
-*.idea/
-*.suo
-*.sln.iml
-
-# OS / system files
-.DS_Store
-Thumbs.db
+Library/
+Temp/
