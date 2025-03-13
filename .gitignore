@@ -11,17 +11,8 @@ UserSettings/
 .vs/
 .vscode/
 
-# Visual Studio cache files
-*.csproj
-*.sln
-*.user
-*.userprefs
-
 # Rider / JetBrains files
 *.idea/
 *.suo
 *.sln.iml
 
-# OS / system files
-.DS_Store
-Thumbs.db
