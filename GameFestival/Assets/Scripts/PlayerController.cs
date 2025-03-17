@@ -1,15 +1,29 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
 {
-    public float moveSpeed = 5f; // Movement Speed 
+    public float moveSpeed = 5f; 
+    private Rigidbody2D rb;
+    private Vector2 movement;
+
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+       
+        
+        rb.freezeRotation = true; 
+    }
 
     void Update()
     {
-        float moveX = Input.GetAxis("Horizontal");
-        float moveY = Input.GetAxis("Vertical");
+        float moveX = Input.GetAxisRaw("Horizontal");
+        float moveY = Input.GetAxisRaw("Vertical");
+        movement = new Vector2(moveX, moveY).normalized;
+    }
 
-        Vector2 movement = new Vector2(moveX, moveY) * moveSpeed * Time.deltaTime;
-        transform.Translate(movement);
+    void FixedUpdate()
+    {
+        rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
     }
 }
