@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      snow-covered tree1_0: -832260303962827157
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
