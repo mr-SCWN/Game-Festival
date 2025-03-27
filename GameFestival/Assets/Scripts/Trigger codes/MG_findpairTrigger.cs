@@ -4,13 +4,13 @@ using UnityEngine.SceneManagement;
 public class SceneTrigger : MonoBehaviour
 {
     [Header("UI Elements")]
-    [Tooltip("Окно с информацией, которое показывается перед переходом в новую сцену (например, описание миниигры)")]
+    [Tooltip("The information window that appears before switching to the new scene (e.g., mini-game description)")]
     public GameObject infoPanel;
     
-    [Tooltip("Подсказка, например 'Нажмите E', которая показывается при входе в зону")]
+    [Tooltip("The hint (e.g., 'Press E') that appears when entering the trigger zone")]
     public GameObject pressEHint;
     
-    [Tooltip("Имя сцены, которую нужно загрузить")]
+    [Tooltip("The name of the scene to load")]
     public string sceneToLoad = "MiniGameScene";
 
     private bool playerInRange = false;
@@ -49,15 +49,15 @@ public class SceneTrigger : MonoBehaviour
     {
         if (playerInRange && Input.GetKeyDown(KeyCode.E))
         {
-            // Если информационное окно ещё не активно, показываем его
+            // If the information window is not active yet, show it
             if (infoPanel != null && !infoPanel.activeSelf)
             {
                 infoPanel.SetActive(true);
-                // Если есть подсказка, можно её скрыть после открытия окна
+                // Hide the hint after opening the window
                 if (pressEHint != null)
                     pressEHint.SetActive(false);
             }
-            // Если окно уже открыто, загружаем новую сцену
+            // If the window is already open, load the new scene
             else
             {
                 SceneManager.LoadScene(sceneToLoad);
