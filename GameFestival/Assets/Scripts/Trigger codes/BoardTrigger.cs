@@ -45,11 +45,16 @@ public class BoardTrigger : MonoBehaviour
 
 
     private void Update (){
-        if (playerInRange && Input.GetKeyDown(KeyCode.E)){
-            panelOpen = !panelOpen;
-
-            if (infoPanel!=null){
-                infoPanel.SetActive(panelOpen);
+        if (playerInRange && Input.GetKeyDown(KeyCode.E) && !panelOpen){   // open info board using E
+            panelOpen = true;
+            if (infoPanel != null){
+                infoPanel.SetActive(true);
+            }
+        }
+        if (playerInRange && Input.GetKeyDown(KeyCode.Q) && panelOpen){    // open info board using Q
+            panelOpen = false;
+            if (infoPanel != null){
+                infoPanel.SetActive(false);
             }
         }
     }

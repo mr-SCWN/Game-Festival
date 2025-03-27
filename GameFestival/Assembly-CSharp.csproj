@@ -65,11 +65,13 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.0.41f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\MiniGames codes\FindPair\FindPair_logic.cs" />
-    <Compile Include="Assets\Scripts\MiniGames codes\FindPair\FindPair_cards.cs" />
+    <Compile Include="Assets\Scripts\Games codes\FindPair\FindPair_cards.cs" />
     <Compile Include="Assets\Scripts\Player codes\PlayerAnimation.cs" />
     <Compile Include="Assets\Scripts\Currency codes\CurrencyManager.cs" />
     <Compile Include="Assets\Scripts\Currency codes\CurrencyUI.cs" />
+    <Compile Include="Assets\Scripts\Games codes\MainScene\MainSceneManager.cs" />
+    <Compile Include="Assets\Scripts\Games codes\FindPair\FindPair_logic.cs" />
+    <Compile Include="Assets\Scripts\Player codes\GlobalGameState.cs" />
     <Compile Include="Assets\Scripts\Player codes\PlayerController.cs" />
     <Compile Include="Assets\Scripts\Trigger codes\MG_findpairTrigger.cs" />
     <Compile Include="Assets\Scripts\Player codes\CameraFollow.cs" />
