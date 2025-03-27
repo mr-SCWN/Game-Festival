@@ -69,6 +69,7 @@
     <Compile Include="Assets\Scripts\Currency codes\CurrencyManager.cs" />
     <Compile Include="Assets\Scripts\Currency codes\CurrencyUI.cs" />
     <Compile Include="Assets\Scripts\Player codes\PlayerController.cs" />
+    <Compile Include="Assets\Scripts\Trigger codes\MG_findpairTrigger.cs" />
     <Compile Include="Assets\Scripts\Player codes\CameraFollow.cs" />
     <Compile Include="Assets\Scripts\Trigger codes\BoardTrigger.cs" />
   </ItemGroup>
