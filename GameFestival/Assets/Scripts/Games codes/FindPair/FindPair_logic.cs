@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 
 public class FindPair_logic : MonoBehaviour
 {
+    public GameObject cursor;
     [Header("Card SetUp")]
     public Cards cardPrefab;   // Prefab of the cards
     public Sprite[] cardFaces;  // 18 unique card faces
@@ -96,6 +97,10 @@ public class FindPair_logic : MonoBehaviour
 
     void HighlightSelected(){       // Highlighting cards
         grid[selectedRow, selectedColumn].SetHighlight(true);
+        if (cursor != null) {
+            Vector3 offset = new Vector3(0.0f, -0.75f, 0.0f);
+            cursor.transform.position = grid[selectedRow, selectedColumn].transform.position + offset;
+        }
     }
 
     void FlipSelectedCard(){        // flip logic
