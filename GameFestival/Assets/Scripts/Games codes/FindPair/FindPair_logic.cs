@@ -106,6 +106,7 @@ public class FindPair_logic : MonoBehaviour
     void FlipSelectedCard(){        // flip logic
         Cards card  = grid[selectedRow, selectedColumn];
         if (!card.gameObject.activeSelf) return;    // Ignore if the card is already removed
+        if (card.isFlipped) return;             // Ignore if the card is already flipped
         card.Flip();
 
         if (firstCard == null){
