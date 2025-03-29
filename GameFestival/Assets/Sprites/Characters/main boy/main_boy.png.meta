@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 4d6836de4c1dcc7479d948166d8831a6
+guid: 13756728998acdb4a828e48826e05da2
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -23,9 +23,6 @@ TextureImporter:
   - first:
       213: 3017180844234325630
     second: main_boy_6
-  - first:
-      213: 1518601453446440306
-    second: main_boy_7
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -125,7 +122,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 64
+        y: 0
         width: 64
         height: 64
       alignment: 0
@@ -147,7 +144,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 64
+        y: 0
         width: 64
         height: 64
       alignment: 0
@@ -169,7 +166,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 128
-        y: 64
+        y: 0
         width: 64
         height: 64
       alignment: 0
@@ -191,7 +188,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 192
-        y: 64
+        y: 0
         width: 64
         height: 64
       alignment: 0
@@ -212,7 +209,7 @@ TextureImporter:
       name: main_boy_4
       rect:
         serializedVersion: 2
-        x: 0
+        x: 256
         y: 0
         width: 64
         height: 64
@@ -234,7 +231,7 @@ TextureImporter:
       name: main_boy_5
       rect:
         serializedVersion: 2
-        x: 64
+        x: 320
         y: 0
         width: 64
         height: 64
@@ -256,7 +253,7 @@ TextureImporter:
       name: main_boy_6
       rect:
         serializedVersion: 2
-        x: 128
+        x: 384
         y: 0
         width: 64
         height: 64
@@ -274,33 +271,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: main_boy_7
-      rect:
-        serializedVersion: 2
-        x: 192
-        y: 0
-        width: 64
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 275211cd9f7231510800000000000000
-      internalID: 1518601453446440306
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: e2e9cfb287658964686d6a695fba7455
+    spriteID: 794d235c3949b654f9b195b564fa94eb
     internalID: 0
     vertices: []
     indices: 
@@ -317,7 +292,6 @@ TextureImporter:
       main_boy_4: 7383906726458256018
       main_boy_5: 2437101927093389808
       main_boy_6: 3017180844234325630
-      main_boy_7: 1518601453446440306
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
