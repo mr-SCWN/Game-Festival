@@ -68,10 +68,10 @@ public class FindPair_logic : MonoBehaviour
     {
         if (!canFlip) return;
 
-        if(Input.GetKeyDown(KeyCode.W)) MoveSelection(-1,0);   // move with wasd
-        if(Input.GetKeyDown(KeyCode.A)) MoveSelection(0,-1);
-        if(Input.GetKeyDown(KeyCode.S)) MoveSelection(+1,0);
-        if(Input.GetKeyDown(KeyCode.D)) MoveSelection(0,+1);
+        if(Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) MoveSelection(-1,0);   // move with wasd
+        if(Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) MoveSelection(0,-1);
+        if(Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)) MoveSelection(+1,0);
+        if(Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) MoveSelection(0,+1);
         
         if(Input.GetKeyDown(KeyCode.E)) FlipSelectedCard();    // select card
 

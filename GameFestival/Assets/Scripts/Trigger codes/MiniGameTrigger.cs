@@ -51,7 +51,7 @@ public class SceneTrigger : MonoBehaviour
 
     private void Update()
     {
-        if (playerInRange && Input.GetKeyDown(KeyCode.E) && !panelOpen)
+        if (playerInRange && Input.GetKeyDown(KeyCode.E))
         {
             panelOpen = true;
             // If the information window is not active yet, show it
