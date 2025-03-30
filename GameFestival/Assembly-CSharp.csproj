@@ -72,11 +72,13 @@
     <Compile Include="Assets\Scripts\Games codes\MainScene\MainSceneManager.cs" />
     <Compile Include="Assets\Scripts\Games codes\FindPair\FindPair_logic.cs" />
     <Compile Include="Assets\Scripts\Trigger codes\MiniGameTrigger.cs" />
-    <Compile Include="Assets\Scripts\Games codes\fishing\FishingInteraction.cs" />
-    <Compile Include="Assets\Scripts\Games codes\fishing\IndicatorMovement.cs" />
+    <Compile Include="Assets\Scripts\Games codes\Fishing\IndicatorMovement.cs" />
+    <Compile Include="Assets\Scripts\Games codes\Fishing\FishingInteraction.cs" />
     <Compile Include="Assets\Scripts\Player codes\PlayerController.cs" />
+    <Compile Include="Assets\Scripts\Games codes\RepeatMelody\RepeatMelody_Frogs.cs" />
     <Compile Include="Assets\Scripts\Player codes\CameraFollow.cs" />
     <Compile Include="Assets\Scripts\Trigger codes\FishingTrigers.cs" />
+    <Compile Include="Assets\Scripts\Games codes\RepeatMelody\RepeatMelody_logic.cs" />
     <Compile Include="Assets\Scripts\Trigger codes\BoardTrigger.cs" />
   </ItemGroup>
   <ItemGroup>

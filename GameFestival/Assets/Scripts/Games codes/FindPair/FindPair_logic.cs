@@ -5,7 +5,10 @@ using Unity.VisualScripting;
 
 public class FindPair_logic : MonoBehaviour
 {
+    [Header("Cursor")]
+    [Tooltip("Cursor object that indicates current selection")]
     public GameObject cursor;
+    
     [Header("Card SetUp")]
     public Cards cardPrefab;   // Prefab of the cards
     public Sprite[] cardFaces;  // 18 unique card faces
