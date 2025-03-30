@@ -51,7 +51,7 @@ public class BoardTrigger : MonoBehaviour
                 infoPanel.SetActive(true);
             }
         }
-        if (playerInRange && Input.GetKeyDown(KeyCode.Q) && panelOpen){    // open info board using Q
+        if (playerInRange && Input.GetKeyDown(KeyCode.Q) && panelOpen){    // close info board using Q
             panelOpen = false;
             if (infoPanel != null){
                 infoPanel.SetActive(false);
