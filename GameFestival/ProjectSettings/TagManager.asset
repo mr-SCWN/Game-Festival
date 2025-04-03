@@ -50,5 +50,8 @@ TagManager:
   - name: Hints
     uniqueID: 1552442159
     locked: 0
+  - name: indicator
+    uniqueID: 2465199023
+    locked: 0
   m_RenderingLayers:
   - Default
