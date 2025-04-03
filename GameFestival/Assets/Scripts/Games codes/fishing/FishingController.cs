@@ -1,90 +1,87 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; // ВИНОСИМО сюди!
+using TMPro;
 
 public class FishingController : MonoBehaviour
 {
     [Header("Fishing Setup")]
-    public Slider fishingProgressBar; // Прогрес-бар для часу
-    public GameObject fish;           // Рибка
-    public GameObject fishingLine;    // Лінія, що утримує рибу
-    //public GameObject fishingRod;     // Вудка
+    public RectTransform indicator;        // Рамка для руху
+    public RectTransform indicatorInside;  // Лінія, якою рухаємось
+    public RectTransform fish;             // Рибка
 
-    public TextMeshProUGUI resultText; // Використання TextMeshPro для тексту
+    public TextMeshProUGUI resultText;     // Текст результату
 
-    private bool isFishing = false;   // Перевіряє, чи зараз рибалка
-    private float fishingTime = 0f;   // Час, коли з'являється рибка
-    private float fishPosition = 0f;  // Позиція рибки на шкалі
-    private float linePosition = 0f;  // Позиція лінії
-    private bool isFishCaught = false; // Чи спіймана риба
-
-    private float fishAppearTime;     // Час до появи рибки
+    private bool isFishing = false;
+    private float fishPosition;            // Випадкова позиція рибки
+    private float linePosition = 0.5f;     // Початкова позиція лінії
+    private bool isFishCaught = false;     // Чи спіймана рибка
 
     void Start()
+{
+    if (fish != null)
     {
-        fishingProgressBar.value = 0; // Початкове значення
-        fish.SetActive(false);        // Рибка прихована спочатку
-        fishingProgressBar.gameObject.SetActive(false); // Прихований прогрес-бар
-        resultText.gameObject.SetActive(false); // Прихований результат
-        fishAppearTime = Random.Range(1f, 5f);  // Випадковий час для появи рибки
+        fish.gameObject.SetActive(false);
     }
+    else
+    {
+        Debug.LogError("Об'єкт fish не призначений в інспекторі!");
+    }
+
+    resultText.gameObject.SetActive(false);
+}
 
     void Update()
     {
         if (isFishing)
         {
-            fishingTime += Time.deltaTime; // Збільшуємо час риболовлі
-            fishingProgressBar.value = fishingTime / fishAppearTime; // Оновлюємо прогрес-бар
-
-            if (fishingTime >= fishAppearTime && !isFishCaught)
-            {
-                fish.SetActive(true); // Показуємо рибку
-                fishPosition = Random.Range(0f, 1f); // Випадкова позиція рибки на шкалі
-                fish.transform.position = new Vector3(fish.transform.position.x, Mathf.Lerp(-5f, 5f, fishPosition), fish.transform.position.z);
-                isFishCaught = true; // Рибка готова до ловлі
-            }
-
-            MoveFishingLine(); // Рух лінії
-            CheckCatch(); // Перевірка на лов риби
+            MoveIndicator();
+            CheckCatch();
         }
     }
 
     public void StartFishing()
     {
         isFishing = true;
-        fishingTime = 0f;
-        fishingProgressBar.value = 0;
         resultText.gameObject.SetActive(false);
+        isFishCaught = false;
+
+        // Випадкове розміщення рибки
+        fishPosition = Random.Range(0f, 1f);
+        fish.anchoredPosition = new Vector2(fish.anchoredPosition.x, 
+            Mathf.Lerp(indicator.rect.yMin, indicator.rect.yMax, fishPosition));
+
+        fish.gameObject.SetActive(true);
     }
 
-    void MoveFishingLine()
+    void MoveIndicator()
     {
-        if (Input.GetKey(KeyCode.W))
-        {
-            linePosition += 1.0f * Time.deltaTime;
+        if (Input.GetKey(KeyCode.W)) {
+            linePosition += 1.5f * Time.deltaTime;
         }
         else if (Input.GetKey(KeyCode.S))
         {
-            linePosition -= 1.0f * Time.deltaTime;
+            linePosition -= 1.5f * Time.deltaTime;
         }
 
         linePosition = Mathf.Clamp(linePosition, 0f, 1f);
-        fishingLine.transform.position = new Vector3(fishingLine.transform.position.x, Mathf.Lerp(-5f, 5f, linePosition), fishingLine.transform.position.z);
+        indicatorInside.anchoredPosition = new Vector2(indicatorInside.anchoredPosition.x, 
+            Mathf.Lerp(indicator.rect.yMin, indicator.rect.yMax, linePosition));
     }
 
     void CheckCatch()
     {
-        if (Mathf.Abs(linePosition - fishPosition) < 0.1f)
+        if (Mathf.Abs(linePosition - fishPosition) < 0.05f)
         {
             isFishCaught = true;
             ShowResult("You caught the fish!");
         }
     }
 
-    void ShowResult(string message)
+   void ShowResult(string message)
     {
-        resultText.text = message;
-        resultText.gameObject.SetActive(true);
-        isFishing = false;
+    resultText.text = message + (isFishCaught ? " - Fish caught!" : " - Fish missed!");
+    resultText.gameObject.SetActive(true);
+    isFishing = false;
     }
+
 }
