@@ -19,6 +19,7 @@ public class FishingInteraction : MonoBehaviour
 {
     SceneManager.LoadScene("Main Game Map");
 }
+
     }
 
     void StartFishing()

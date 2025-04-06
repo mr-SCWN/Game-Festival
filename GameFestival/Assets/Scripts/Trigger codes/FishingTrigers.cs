@@ -7,11 +7,7 @@ public class FishingTrigger : MonoBehaviour
     [Header("UI Elements")]
     public GameObject pressEHint;  // Підказка для взаємодії
 
-    void Start()
-    {
-        if (pressEHint != null)
-            pressEHint.SetActive(false); // Початково підказка не видима
-    }
+   
 
     void Update()
     {
