@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.EditorTools;
 using UnityEditor.ShaderGraph.Internal;
+using System.Diagnostics;
 
 public class MoreLessGameManager : MonoBehaviour
 {
@@ -136,6 +137,169 @@ public class MoreLessGameManager : MonoBehaviour
 
     void Update()
     {
+        if (playerTurn){
+            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)){
+                currentSelection--;
+                if (currentSelection < 0){
+                    currentSelection=1;
+                }
+                UpdateChoiseCursor();
+            } else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)){
+                currentSelection++;
+                if (currentSelection > 1){
+                    currentSelection = 0;
+                }
+                UpdateChoiseCursor();
+            } else if (Input.GetKeyDown(KeyCode.E)){
+                ConfirmPlayerGuess();
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.Q)){
+            GlobalGameState.comingFromMiniGame = true;
+            GlobalGameState.spawnPosition = new Vector2(-24.0f, 2.0f);
+            SceneManager.LoadScene("Main Game Map");
+        }
+    }
+
+    void ConfirmPlayerGuess(){
+        bool guessMore = (currentSelection == 0);
+        ProcessPlayerGuess(guessMore);
+    }
+
+    void ProcessPlayerGuess(bool guessMore){
+        if (currentIndex >= deck.Count){
+            EndGame();
+            return ;
+        }
+        int nextCard = deck[currentIndex];
+        currentIndex++;
+        int currentRank = currentCard%13;
+        int nextRank = nextCard%13;
+        bool correct = false;
+
+        if (nextRank == currentRank){
+            correct = false;
+        } else if (guessMore){
+            correct = (nextRank > currentRank);
+        } else {
+            correct = (nextRank < currentRank);
+        }
+
+        if (correct){
+            playerScore++;
+            infoText.text = "Correct! Your turn continues.";
+        } else {
+            infoText.text = "Wrong! Turn passes to enemy.";
+            playerTurn = false;
+            Invoke("AIMove", aiDelay);
+        }
         
+        currentCard = nextCard;
+        UpdateCurrentCardUI();
+        UpdateDeckUI();
+        UpdateScoreUI();
+        CheckDeckEnd();
+    }
+
+    bool DecideAIGuess(){
+        int currentRank = currentCard % 13;
+    int countMore = 0;
+    int countLess = 0;
+    
+    for (int i = currentIndex; i < deck.Count; i++)
+    {
+        int rank = deck[i] % 13;
+        if (rank > currentRank)
+            countMore++;
+        else if (rank < currentRank)
+            countLess++;
+    }
+    
+    if (countMore > countLess)
+        return true;  // choose More
+    else if (countLess > countMore)
+        return false; // choose Less
+    else
+        return (Random.Range(0, 2) == 0);
+    }
+
+    void AIMove(){
+        if (currentIndex >= deck.Count){
+            return;
+        }
+        infoText.text = "Enemy is thinking";
+        bool aiGuessMore = DecideAIGuess();
+        if (aiChoiceImage != null){
+            aiChoiceImage.sprite = aiGuessMore ? aiMoreSprite : aiLessSprite;
+            aiChoiceImage.enabled = true;
+        } 
+        Invoke("ProcessAIMove", postTurnDelay);
+    }
+
+    void ProcessAIMove(){
+        if (currentIndex >= deck.Count){
+            return;
+        }
+        int nextCard = deck[currentIndex];
+        currentIndex++;
+        int currentRank = currentCard%13;
+        int nextRank = nextCard%13;
+        bool aiGuessMore = DecideAIGuess();
+        bool correct = false;
+
+        if (nextRank == currentRank){
+            correct = false;
+        } else if (aiGuessMore){
+            correct = ( nextRank > currentRank);
+        } else {
+            correct = (nextRank < currentRank);
+        }
+
+        if (correct) {
+            aiScore++;
+            infoText.text = "AI guessed correctly! Your turn now.";
+        } else {
+            infoText.text = "AI guessed wrong! Your turn.";
+        }
+        
+        if (aiChoiceImage != null)
+            aiChoiceImage.enabled = false;
+        
+        currentCard = nextCard;
+        UpdateCurrentCardUI();
+        UpdateDeckUI();
+        UpdateScoreUI();
+        
+        playerTurn = true;
+        CheckDeckEnd();
+    }
+
+    void CheckDeckEnd(){
+        if (currentIndex >= deck.Count){
+            EndGame();
+        }
+    }
+
+    void EndGame(){
+        string result = "";
+        if (playerScore > aiScore){
+            result = "You win!";
+        } else if (playerScore <aiScore){
+            result = "You loose!";
+        } else {
+            result = "Draw!";
+        }
+
+        infoText.text = $"Game Over!\nFinal Score: Player {playerScore} - AI {aiScore}\n{result}";
+        moreOption.SetActive(false);
+        lessOption.SetActive(false);
+        Invoke("ReturnToMain", 3f);
+    }
+
+    void ReturnToMain()
+    {
+        GlobalGameState.comingFromMiniGame = true;
+        GlobalGameState.spawnPosition = new Vector2(-24.0f, 2.0f);
+        SceneManager.LoadScene("Main Game Map");
     }
 }
