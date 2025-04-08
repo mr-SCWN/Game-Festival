@@ -77,9 +77,6 @@ if (fishChangeTimer >= fishChangeInterval)
     // Рандомна пауза між змінами позиції з меншим діапазоном
     fishChangeInterval = Random.Range(0.2f, 0.5f); // Швидший рух з меншою паузою
     fishChangeTimer = 0f;
-
-    // Дебаг, щоб бачити зміни
-    Debug.Log($"🐟 fishPos: {fishPosition}, targetY: {fishTargetY}");
 }
 
 // Збільшення плавності руху
@@ -101,7 +98,6 @@ SetFishPosition();
         }
         fishPosition = Random.Range(0f, 1f); // Генерація позиції рибки
         SetFishPosition(); // Встановлення позиції рибки після старту риболовлі
-        Debug.Log("🐟 Fish set at Y: " + fish.anchoredPosition.y);
         fish.gameObject.SetActive(true);
     }
     void MoveIndicator()
@@ -119,8 +115,6 @@ SetFishPosition();
         CheckIfFishCaught();
         SetIndicatorPosition();
         SetFishPosition(); // Зміщення рибки при зміні індикатора
-        Debug.Log("📍 Fish moved to Y: " + fish.anchoredPosition.y);
-        Debug.Log("📍 Indicator at Y: " + indicatorInside.anchoredPosition.y);
     }
    void CheckIfFishCaught()
 {
@@ -208,7 +202,7 @@ public void RestartGame()
         SetIndicatorPosition(); // Оновлення
     }
     // Нова позиція рибки
-    fishPosition = Random.Range(0f, 1f); // 🎯 Скидання
+    fishPosition = Random.Range(0f, 1f); // Скидання
     SetFishPosition();
     fish.gameObject.SetActive(true);
     // Скидаємо стани
