@@ -16,17 +16,16 @@ public class FishingInteraction : MonoBehaviour
         }
 
         if (Input.GetKeyDown(KeyCode.Q))
-{
-    SceneManager.LoadScene("Main Game Map");
-}
-
+        {
+            ExitFishing(); // <-- викликаємо правильний метод
+        }
     }
 
     void StartFishing()
     {
         indicator.SetActive(true);
         catchZone.SetActive(true);
-        isFishingActive = true; 
+        isFishingActive = true;
     }
 
     void ExitFishing()
@@ -35,10 +34,21 @@ public class FishingInteraction : MonoBehaviour
         catchZone.SetActive(false);
         isFishingActive = false;
 
-        // Повернення на головну сцену
+        // Зберігаємо позицію повернення
         GlobalGameState.comingFromMiniGame = true;
-        GlobalGameState.spawnPosition = new Vector2(-42.0f, 20.0f);  // Позиція на головній карті
-        SceneManager.LoadScene("Main Game Map");  // Назва твоєї головної сцени
+
+        // Можеш виставити координати прямо тут, або брати позицію гравця:
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            GlobalGameState.spawnPosition = player.transform.position;
+        }
+        else
+        {
+            GlobalGameState.spawnPosition = new Vector2(-4.0f, -1f); // запасний варіант
+        }
+
+        SceneManager.LoadScene("Main Game Map");
     }
 
     void OnTriggerEnter(Collider other)

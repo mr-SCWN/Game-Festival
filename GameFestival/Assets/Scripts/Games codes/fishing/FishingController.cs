@@ -69,7 +69,8 @@ if (fishChangeTimer >= fishChangeInterval)
     do
     {
         // Амплітуда руху збільшена в 100 разів
-        newTarget = Random.Range(0.0f, 100.0f); // Дуже великий діапазон
+        newTarget = fishPosition + Random.Range(-30f, 30f); // рух вгору або вниз, але не на 100
+    newTarget = Mathf.Clamp(newTarget, 0f, 100f); // обмежити в межах
     } while (Mathf.Abs(newTarget - fishPosition) < 0.25f); // Перевірка для уникнення маленьких змін
 
     fishTargetY = newTarget;
@@ -103,7 +104,7 @@ SetFishPosition();
     void MoveIndicator()
     {
         // Зменшуємо швидкість руху
-        float moveSpeed = 90f;  // Повільніший рух
+        float moveSpeed = 150f;  // Було 80f, тепер в 2 рази швидше
         // Рух індикатора
         if (Input.GetKey(KeyCode.W))
             linePosition += moveSpeed * Time.deltaTime;
@@ -121,7 +122,7 @@ SetFishPosition();
     float fishY = fish.anchoredPosition.y;
     float indicatorY = indicatorInside.anchoredPosition.y;
 
-    float threshold = 25f; // 👈 розширена зона попадання
+    float threshold = 50f; // 👈 розширена зона попадання
 
     if (Mathf.Abs(fishY - indicatorY) < threshold)
     {

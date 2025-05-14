@@ -8,10 +8,12 @@ public class MainSceneManager : MonoBehaviour
     {
         if (GlobalGameState.comingFromMiniGame)
         {
-            
-            player.position = GlobalGameState.spawnPosition;
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                player.transform.position = GlobalGameState.spawnPosition;
+            }
 
-            
             GlobalGameState.comingFromMiniGame = false;
         }
     }

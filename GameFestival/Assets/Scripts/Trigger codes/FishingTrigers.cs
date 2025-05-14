@@ -12,10 +12,20 @@ public class FishingTrigger : MonoBehaviour
     void Update()
     {
         if (isPlayerNear && Input.GetKeyDown(KeyCode.E)) 
-        {
-            // Завантажити сцену риболовлі, коли гравець натискає E
-            SceneManager.LoadScene("MG_Fishing");
-        }
+{
+    // Зберігаємо позицію перед переходом
+    GameObject player = GameObject.FindGameObjectWithTag("Player");
+    if (player != null)
+    {
+        Vector3 pos = player.transform.position;
+        PlayerPrefs.SetFloat("PlayerX", pos.x);
+        PlayerPrefs.SetFloat("PlayerY", pos.y);
+        PlayerPrefs.SetFloat("PlayerZ", pos.z);
+    }
+
+    // Переходимо до сцени риболовлі
+    SceneManager.LoadScene("MG_Fishing");
+}
 
         if (isPlayerNear && Input.GetKeyDown(KeyCode.Q)) 
         {
