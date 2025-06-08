@@ -80,7 +80,7 @@ public class FindPair_logic : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.Q)) {
             GlobalGameState.comingFromMiniGame = true;
-            GlobalGameState.spawnPosition = new Vector2(-18.0f, 2.0f);
+            GlobalGameState.spawnPosition = new Vector2(-15.40047f, 1.793956f);;
             SceneManager.LoadScene("Main Game Map");
         }
     }
@@ -129,7 +129,7 @@ public class FindPair_logic : MonoBehaviour
 
             if (pairsFound >= totalFound){
                 GlobalGameState.comingFromMiniGame = true;
-                GlobalGameState.spawnPosition = new Vector2(-18.0f, 2.0f);
+                GlobalGameState.spawnPosition = new Vector2(-15.40047f, 1.793956f);
                 SceneManager.LoadScene("Main Game Map");
             }
         } else {        // if guess wasnt correct

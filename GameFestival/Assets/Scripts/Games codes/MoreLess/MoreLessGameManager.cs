@@ -20,9 +20,7 @@ public class MoreLessGameManager : MonoBehaviour
     public Vector3 cursorOffset;    // offset for cursor
 
     [Header("AI Feedback (optional)")]
-    public Image aiChoiceImage;
-    public Sprite aiMoreSprite;
-    public Sprite aiLessSprite;
+    public TMP_Text aiChoiceText; 
 
     [Header("Sprites")]
     public Sprite[] cardSprites;    // 52 card sprites
@@ -89,7 +87,9 @@ public class MoreLessGameManager : MonoBehaviour
     void UpdateCardUI()
     {
         currentCardImage.sprite = cardSprites[currentCard];
+        Debug.Log($"Showing sprite {cardSprites[currentCard].name} (id={currentCard}, rank={currentCard % 13})");
     }
+
 
     void UpdateDeckUI()
     {
@@ -102,31 +102,33 @@ public class MoreLessGameManager : MonoBehaviour
     void UpdateScoreUI()
     {
         playerScoreText.text = "Player: " + playerScore;
-        aiScoreText.text    = "AI: " + aiScore;
+        aiScoreText.text    = "Opponent: " + aiScore;
     }
 
     void Update()
     {
+        // player turn
         if (playerTurn)
         {
-            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D))
             {
-                currentSelection = (currentSelection + 1) % 2; // changing 0 - 1
-                PositionCursor();
-            }
-            else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
-            {
-                currentSelection = (currentSelection + 1) % 2;
+                currentSelection = 1 - currentSelection;
                 PositionCursor();
             }
             else if (Input.GetKeyDown(KeyCode.E))
             {
-                HandlePlayerGuess(currentSelection == 0);
+                // 0 = More, 1 = Less
+                bool guessMore = (currentSelection == 0);
+                HandlePlayerGuess(guessMore);
             }
         }
 
         if (Input.GetKeyDown(KeyCode.Q))
-            ExitToMain();
+        {
+            GlobalGameState.comingFromMiniGame = true;
+            GlobalGameState.spawnPosition = new Vector2(-21.97706f, 1.37644f);
+            SceneManager.LoadScene("Main Game Map");
+        }
     }
 
     void PositionCursor()
@@ -142,6 +144,8 @@ public class MoreLessGameManager : MonoBehaviour
         int next = deck[currentIndex++];
         bool correct = CheckGuess(currentCard, next, guessMore);
 
+       // Debug.Log($"Player guessed {(guessMore?"More":"Less")} - oldR={(currentCard%13)}, newR={(next%13)}, correct={correct}");
+
         if (correct)
         {
             playerScore++;
@@ -149,7 +153,7 @@ public class MoreLessGameManager : MonoBehaviour
         }
         else
         {
-            infoText.text = "Wrong! AI's turn.";
+            infoText.text = "Wrong! Opponent's turn.";
             playerTurn = false;
             Invoke(nameof(AITurn), aiDelay);
         }
@@ -159,10 +163,16 @@ public class MoreLessGameManager : MonoBehaviour
         CheckEnd();
     }
 
+    int GetRank(int cardIndex)
+    {
+        return (cardIndex / 4) + 2;
+    }
+
     bool CheckGuess(int oldCard, int newCard, bool more)
     {
-        int oldR = oldCard % 13;
-        int newR = newCard % 13;
+        int oldR = GetRank(oldCard);
+        int newR = GetRank(newCard);
+
         if (newR == oldR) return false;
         return more ? (newR > oldR) : (newR < oldR);
     }
@@ -170,10 +180,10 @@ public class MoreLessGameManager : MonoBehaviour
     void AITurn()
     {
         if (currentIndex >= deck.Count) return;
-        infoText.text = "AI is thinking…";
+        infoText.text = "Opponent is thinking…";
 
-        // counting probabilities
-        int oldR = currentCard % 13;
+        // count probabilities
+        int oldR = GetRank(currentCard);
         int countMore = 0, countLess = 0;
         for (int i = currentIndex; i < deck.Count; i++)
         {
@@ -183,37 +193,44 @@ public class MoreLessGameManager : MonoBehaviour
         }
         lastAIGuessMore = (countMore >= countLess);
 
-        // Show AI choose
-        if (aiChoiceImage != null)
+        // showing AI chose
+        if (aiChoiceText != null)
         {
-            aiChoiceImage.sprite = lastAIGuessMore ? aiMoreSprite : aiLessSprite;
-            aiChoiceImage.enabled = true;
+            aiChoiceText.text = lastAIGuessMore ? "MORE" : "LESS";
+            aiChoiceText.gameObject.SetActive(true);
         }
 
         Invoke(nameof(ProcessAIGuess), postTurnDelay);
     }
 
-
     void ProcessAIGuess()
     {
-        aiChoiceImage.enabled = false;
+        // hide AI text
+        if (aiChoiceText != null)
+            aiChoiceText.gameObject.SetActive(false);
+
         if (currentIndex >= deck.Count) return;
 
         int next = deck[currentIndex++];
         bool correct = CheckGuess(currentCard, next, lastAIGuessMore);
 
+         Debug.Log($"AI guessed {(lastAIGuessMore?"More":"Less")} - oldR={(currentCard%13)}, newR={(next%13)}, correct={correct}");
+
         if (correct)
         {
             aiScore++;
-            infoText.text = "AI was correct! Your turn.";
+            infoText.text = "Opponent was correct! Opponent keeps turn.";
+            playerTurn = false;           // **AI continues turn**
+            Invoke(nameof(AITurn), aiDelay);
         }
         else
         {
-            infoText.text = "AI was wrong! Your turn.";
+            infoText.text = "Opponent was wrong! Your turn.";
         }
 
         currentCard = next;
         UpdateAllUI();
+
         playerTurn = true;
         CheckEnd();
     }
@@ -224,10 +241,14 @@ public class MoreLessGameManager : MonoBehaviour
         if (currentIndex >= deck.Count)
         {
             string res = playerScore > aiScore ? "You Win!" :
-                         playerScore < aiScore ? "AI Wins!" : "Draw!";
-            infoText.text = $"Game Over!\nPlayer {playerScore} – AI {aiScore}\n{res}";
+                         playerScore < aiScore ? "Opponent Wins!" : "Draw!";
+            infoText.text = $"Game Over!\nPlayer {playerScore} – Opponent {aiScore}\n{res}";
             // block moving
             playerTurn = false;
+
+            GlobalGameState.comingFromMiniGame = true;
+            GlobalGameState.spawnPosition = new Vector2(-21.97706f, 1.37644f);
+            SceneManager.LoadScene("Main Game Map");
         }
     }
 
