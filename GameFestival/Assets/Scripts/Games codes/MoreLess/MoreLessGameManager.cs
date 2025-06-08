@@ -1,305 +1,238 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.EditorTools;
-using UnityEditor.ShaderGraph.Internal;
-using System.Diagnostics;
+using TMPro;
 
 public class MoreLessGameManager : MonoBehaviour
 {
-    [Header ("UI Elements")]
-    [Tooltip ("Image showing the current open card on the table")]
+    [Header("UI Elements")]
     public Image currentCardImage;
-
-    [Tooltip ("Image showing deck")]
     public Image deckImage;
-    
-    [Tooltip ("Array of deck sprites")]
-    public Sprite[] deckSprites;
-    
-    [Tooltip ("Text to show Player Score")]
-    public Text playerScoreText;
-    
-    [Tooltip ("Text to show AI Score")]
-    public Text aiScoreText;
-    
-    [Tooltip ("Text for informational messages")]
-    public Text infoText;
+    public TMP_Text  playerScoreText;
+    public TMP_Text  aiScoreText;
+    public TMP_Text  infoText;
 
     [Header("Option UI")]
-    [Tooltip("UI object representing the 'More' option")]
     public GameObject moreOption;
-    
-    [Tooltip("UI object representing the 'Less' option")]
     public GameObject lessOption;
+    public GameObject cursorImage;  // cursor
+    public Vector3 cursorOffset;    // offset for cursor
 
-    [Tooltip("Cursor object that indicates the current selection")]
-    public GameObject cursor;
-
-    [Header("AI Display")]
-    [Tooltip("Image showing the AI's last chosen button (for visual feedback)")]
+    [Header("AI Feedback (optional)")]
     public Image aiChoiceImage;
-    [Tooltip("Sprite for AI 'More' selection")]
     public Sprite aiMoreSprite;
-    [Tooltip("Sprite for AI 'Less' selection")]
     public Sprite aiLessSprite;
 
-    [Header ("Card Sprites")]
-    [Tooltip("Array of 52 card sprites (0 to 51)")]
-    public Sprite[] cardSprites;
+    [Header("Sprites")]
+    public Sprite[] cardSprites;    // 52 card sprites
+    public Sprite[] deckSprites;    // 3 deck sprites
 
-    [Header ("Game Settings")]
-    public int maxCards = 52;
-    public float aiDelay=1.0f;
+    [Header("Game Settings")]
+    public float aiDelay = 1.0f;
     public float postTurnDelay = 1.0f;
 
-    private List<int> deck; // savnig number of card (0..51)
-    private int currentCard;     // card of table
-    private int currentIndex = 0;   // index of the next card 
-    private int playerScore = 0;
-    private int aiScore = 0;
-    private bool playerTurn = true;
-    private int currentSelection =0; // 0 - more ; 1 - less 
+    // logic
+    private List<int> deck;
+    private int currentIndex;
+    private int currentCard;
+    private int playerScore;
+    private int aiScore;
+    private bool lastAIGuessMore;
+
+    private bool playerTurn;
+    private int currentSelection; // 0 = More, 1 = Less
 
     void Start()
     {
         InitDeck();
         ShuffleDeck();
-        currentCard = deck[currentIndex];
-        currentIndex++;
-        UpdateCurrentCardUI();
-        UpdateDeckUI();
-        UpdateScoreUI();
+        currentIndex = 0;
+        DrawFirstCard();
+        UpdateAllUI();
 
         playerTurn = true;
-        infoText.text = "Your turn! Use A/D to select, then press E.";
-
         currentSelection = 0;
-        UpdateChoiseCursor();
+        PositionCursor();
+        infoText.text = "Your turn: A/D to select, E to confirm.";
     }
 
-    void InitDeck(){
+    void InitDeck()
+    {
         deck = new List<int>();
-        for (int i = 0; i<maxCards; i++){
-            deck.Add(i);
-        }
+        for (int i = 0; i < 52; i++) deck.Add(i);
     }
 
-    void ShuffleDeck(){
-        for (int i = 0; i<maxCards; i++){
-            int temp = deck[i];
+    void ShuffleDeck()
+    {
+        for (int i = 0; i < deck.Count; i++)
+        {
             int r = Random.Range(i, deck.Count);
+            int tmp = deck[i];
             deck[i] = deck[r];
-            deck[r] = temp;
+            deck[r] = tmp;
         }
     }
 
-    void UpdateCurrentCardUI(){
-        if (currentCardImage != null && cardSprites.Length >= maxCards){
-            currentCardImage.sprite = cardSprites[currentCard];
-        }
+    void DrawFirstCard()
+    {
+        currentCard = deck[currentIndex++];
     }
 
-    void UpdateDeckUI(){
-        if (deckImage!=null && deckSprites!=null && deckSprites.Length >= 3){
-            int remaining = deck.Count - currentIndex;
-            if (remaining > 30){
-                deckImage.sprite = deckSprites[0];
-            } else if (remaining > 10) {
-                deckImage.sprite = deckSprites[1];
-            } else {
-                deckImage.sprite = deckSprites[2];
-            }
-        }
+    void UpdateAllUI()
+    {
+        UpdateCardUI();
+        UpdateDeckUI();
+        UpdateScoreUI();
     }
 
-    void UpdateScoreUI(){
-        if (playerScoreText != null){
-            playerScoreText.text = "Player: " + playerScore;
-        }
-        if (aiScoreText != null){
-            aiScoreText.text = "Enemy: " + aiScore;
-        }
+    void UpdateCardUI()
+    {
+        currentCardImage.sprite = cardSprites[currentCard];
     }
 
-    void UpdateChoiseCursor(){
-        if (cursor != null ){
-            Vector3 offset = new Vector3(0f, -20f, 0f);
-            if (currentSelection == 0 && moreOption!=null){
-                cursor.transform.position = moreOption.transform.position + offset;
-            } else if (currentSelection == 1 && lessOption!=null){
-                cursor.transform.position = lessOption.transform.position + offset;
-            }
-        }
+    void UpdateDeckUI()
+    {
+        int left = deck.Count - currentIndex;
+        if (left > 30) deckImage.sprite = deckSprites[0];
+        else if (left > 10) deckImage.sprite = deckSprites[1];
+        else deckImage.sprite = deckSprites[2];
+    }
+
+    void UpdateScoreUI()
+    {
+        playerScoreText.text = "Player: " + playerScore;
+        aiScoreText.text    = "AI: " + aiScore;
     }
 
     void Update()
     {
-        if (playerTurn){
-            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)){
-                currentSelection--;
-                if (currentSelection < 0){
-                    currentSelection=1;
-                }
-                UpdateChoiseCursor();
-            } else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)){
-                currentSelection++;
-                if (currentSelection > 1){
-                    currentSelection = 0;
-                }
-                UpdateChoiseCursor();
-            } else if (Input.GetKeyDown(KeyCode.E)){
-                ConfirmPlayerGuess();
+        if (playerTurn)
+        {
+            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                currentSelection = (currentSelection + 1) % 2; // changing 0 - 1
+                PositionCursor();
+            }
+            else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                currentSelection = (currentSelection + 1) % 2;
+                PositionCursor();
+            }
+            else if (Input.GetKeyDown(KeyCode.E))
+            {
+                HandlePlayerGuess(currentSelection == 0);
             }
         }
-        if (Input.GetKeyDown(KeyCode.Q)){
-            GlobalGameState.comingFromMiniGame = true;
-            GlobalGameState.spawnPosition = new Vector2(-24.0f, 2.0f);
-            SceneManager.LoadScene("Main Game Map");
-        }
+
+        if (Input.GetKeyDown(KeyCode.Q))
+            ExitToMain();
     }
 
-    void ConfirmPlayerGuess(){
-        bool guessMore = (currentSelection == 0);
-        ProcessPlayerGuess(guessMore);
+    void PositionCursor()
+    {
+        // moving cursor
+        var target = (currentSelection == 0 ? moreOption : lessOption).transform;
+        cursorImage.transform.position = target.position + cursorOffset;
     }
 
-    void ProcessPlayerGuess(bool guessMore){
-        if (currentIndex >= deck.Count){
-            EndGame();
-            return ;
-        }
-        int nextCard = deck[currentIndex];
-        currentIndex++;
-        int currentRank = currentCard%13;
-        int nextRank = nextCard%13;
-        bool correct = false;
+    void HandlePlayerGuess(bool guessMore)
+    {
+        if (currentIndex >= deck.Count) return;
+        int next = deck[currentIndex++];
+        bool correct = CheckGuess(currentCard, next, guessMore);
 
-        if (nextRank == currentRank){
-            correct = false;
-        } else if (guessMore){
-            correct = (nextRank > currentRank);
-        } else {
-            correct = (nextRank < currentRank);
-        }
-
-        if (correct){
+        if (correct)
+        {
             playerScore++;
-            infoText.text = "Correct! Your turn continues.";
-        } else {
-            infoText.text = "Wrong! Turn passes to enemy.";
+            infoText.text = "Correct! You keep turn.";
+        }
+        else
+        {
+            infoText.text = "Wrong! AI's turn.";
             playerTurn = false;
-            Invoke("AIMove", aiDelay);
+            Invoke(nameof(AITurn), aiDelay);
         }
-        
-        currentCard = nextCard;
-        UpdateCurrentCardUI();
-        UpdateDeckUI();
-        UpdateScoreUI();
-        CheckDeckEnd();
+
+        currentCard = next;
+        UpdateAllUI();
+        CheckEnd();
     }
 
-    bool DecideAIGuess(){
-        int currentRank = currentCard % 13;
-    int countMore = 0;
-    int countLess = 0;
-    
-    for (int i = currentIndex; i < deck.Count; i++)
+    bool CheckGuess(int oldCard, int newCard, bool more)
     {
-        int rank = deck[i] % 13;
-        if (rank > currentRank)
-            countMore++;
-        else if (rank < currentRank)
-            countLess++;
-    }
-    
-    if (countMore > countLess)
-        return true;  // choose More
-    else if (countLess > countMore)
-        return false; // choose Less
-    else
-        return (Random.Range(0, 2) == 0);
+        int oldR = oldCard % 13;
+        int newR = newCard % 13;
+        if (newR == oldR) return false;
+        return more ? (newR > oldR) : (newR < oldR);
     }
 
-    void AIMove(){
-        if (currentIndex >= deck.Count){
-            return;
-        }
-        infoText.text = "Enemy is thinking";
-        bool aiGuessMore = DecideAIGuess();
-        if (aiChoiceImage != null){
-            aiChoiceImage.sprite = aiGuessMore ? aiMoreSprite : aiLessSprite;
-            aiChoiceImage.enabled = true;
-        } 
-        Invoke("ProcessAIMove", postTurnDelay);
-    }
+    void AITurn()
+    {
+        if (currentIndex >= deck.Count) return;
+        infoText.text = "AI is thinking…";
 
-    void ProcessAIMove(){
-        if (currentIndex >= deck.Count){
-            return;
+        // counting probabilities
+        int oldR = currentCard % 13;
+        int countMore = 0, countLess = 0;
+        for (int i = currentIndex; i < deck.Count; i++)
+        {
+            int r = deck[i] % 13;
+            if (r > oldR) countMore++;
+            else if (r < oldR) countLess++;
         }
-        int nextCard = deck[currentIndex];
-        currentIndex++;
-        int currentRank = currentCard%13;
-        int nextRank = nextCard%13;
-        bool aiGuessMore = DecideAIGuess();
-        bool correct = false;
+        lastAIGuessMore = (countMore >= countLess);
 
-        if (nextRank == currentRank){
-            correct = false;
-        } else if (aiGuessMore){
-            correct = ( nextRank > currentRank);
-        } else {
-            correct = (nextRank < currentRank);
-        }
-
-        if (correct) {
-            aiScore++;
-            infoText.text = "AI guessed correctly! Your turn now.";
-        } else {
-            infoText.text = "AI guessed wrong! Your turn.";
-        }
-        
+        // Show AI choose
         if (aiChoiceImage != null)
-            aiChoiceImage.enabled = false;
-        
-        currentCard = nextCard;
-        UpdateCurrentCardUI();
-        UpdateDeckUI();
-        UpdateScoreUI();
-        
-        playerTurn = true;
-        CheckDeckEnd();
-    }
-
-    void CheckDeckEnd(){
-        if (currentIndex >= deck.Count){
-            EndGame();
-        }
-    }
-
-    void EndGame(){
-        string result = "";
-        if (playerScore > aiScore){
-            result = "You win!";
-        } else if (playerScore <aiScore){
-            result = "You loose!";
-        } else {
-            result = "Draw!";
+        {
+            aiChoiceImage.sprite = lastAIGuessMore ? aiMoreSprite : aiLessSprite;
+            aiChoiceImage.enabled = true;
         }
 
-        infoText.text = $"Game Over!\nFinal Score: Player {playerScore} - AI {aiScore}\n{result}";
-        moreOption.SetActive(false);
-        lessOption.SetActive(false);
-        Invoke("ReturnToMain", 3f);
+        Invoke(nameof(ProcessAIGuess), postTurnDelay);
     }
 
-    void ReturnToMain()
+
+    void ProcessAIGuess()
     {
-        GlobalGameState.comingFromMiniGame = true;
-        GlobalGameState.spawnPosition = new Vector2(-24.0f, 2.0f);
-        SceneManager.LoadScene("Main Game Map");
+        aiChoiceImage.enabled = false;
+        if (currentIndex >= deck.Count) return;
+
+        int next = deck[currentIndex++];
+        bool correct = CheckGuess(currentCard, next, lastAIGuessMore);
+
+        if (correct)
+        {
+            aiScore++;
+            infoText.text = "AI was correct! Your turn.";
+        }
+        else
+        {
+            infoText.text = "AI was wrong! Your turn.";
+        }
+
+        currentCard = next;
+        UpdateAllUI();
+        playerTurn = true;
+        CheckEnd();
+    }
+
+
+    void CheckEnd()
+    {
+        if (currentIndex >= deck.Count)
+        {
+            string res = playerScore > aiScore ? "You Win!" :
+                         playerScore < aiScore ? "AI Wins!" : "Draw!";
+            infoText.text = $"Game Over!\nPlayer {playerScore} – AI {aiScore}\n{res}";
+            // block moving
+            playerTurn = false;
+        }
+    }
+
+    void ExitToMain()
+    {
+        SceneManager.LoadScene("MainGameScene");
     }
 }
