@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      iglu_0: 3353997771897354265
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

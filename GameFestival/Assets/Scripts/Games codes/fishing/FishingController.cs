@@ -49,44 +49,51 @@ private float fishSmoothSpeed = 25f; // Було 9, тепер швидше
     }
     void Update()
     {
-       if (isFishing)
-{
-    remainingTime -= Time.deltaTime;
-    if (remainingTime <= 0f)
-    {
-        EndGame(false);
-    }
-    else
-    {
-        resultText.text = "Час: " + Mathf.Ceil(remainingTime).ToString();
-    }
-    MoveIndicator();
-// Збільшуємо амплітуду руху до 100 (щоб рибка рухалась дуже сильно)
-fishChangeTimer += Time.deltaTime;
-if (fishChangeTimer >= fishChangeInterval)
-{
-    float newTarget;
-    do
-    {
-        // Амплітуда руху збільшена в 100 разів
-        newTarget = fishPosition + Random.Range(-30f, 30f); // рух вгору або вниз, але не на 100
-    newTarget = Mathf.Clamp(newTarget, 0f, 100f); // обмежити в межах
-    } while (Mathf.Abs(newTarget - fishPosition) < 0.25f); // Перевірка для уникнення маленьких змін
+        if (isFishing)
+        {
+            remainingTime -= Time.deltaTime;
+            if (remainingTime <= 0f)
+            {
+                EndGame(false);
+            }
+            else
+            {
+                resultText.text = "Час: " + Mathf.Ceil(remainingTime).ToString();
+            }
+            MoveIndicator();
+            // Збільшуємо амплітуду руху до 100 (щоб рибка рухалась дуже сильно)
+            fishChangeTimer += Time.deltaTime;
+            if (fishChangeTimer >= fishChangeInterval)
+            {
+                float newTarget;
+                do
+                {
+                    // Амплітуда руху збільшена в 100 разів
+                    newTarget = fishPosition + Random.Range(-30f, 30f); // рух вгору або вниз, але не на 100
+                    newTarget = Mathf.Clamp(newTarget, 0f, 100f); // обмежити в межах
+                } while (Mathf.Abs(newTarget - fishPosition) < 0.25f); // Перевірка для уникнення маленьких змін
 
-    fishTargetY = newTarget;
+                fishTargetY = newTarget;
 
-    // Рандомна пауза між змінами позиції з меншим діапазоном
-    fishChangeInterval = Random.Range(0.2f, 0.5f); // Швидший рух з меншою паузою
-    fishChangeTimer = 0f;
-}
+                // Рандомна пауза між змінами позиції з меншим діапазоном
+                fishChangeInterval = Random.Range(0.2f, 0.5f); // Швидший рух з меншою паузою
+                fishChangeTimer = 0f;
+            }
 
-// Збільшення плавності руху
-fishPosition = Mathf.Lerp(fishPosition, fishTargetY, Time.deltaTime * fishSmoothSpeed);
+            // Збільшення плавності руху
+            fishPosition = Mathf.Lerp(fishPosition, fishTargetY, Time.deltaTime * fishSmoothSpeed);
 
-SetFishPosition();
+            SetFishPosition();
 
-    CheckIfFishCaught();
-}
+            CheckIfFishCaught();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Q)) // You can always quit
+            ExitToMainMenu();
+
+        if (gameOverPanel.activeSelf && Input.GetKeyDown(KeyCode.Q))
+            ExitToMainMenu();
+
     }
     public void StartFishing()
     {
@@ -171,55 +178,66 @@ SetFishPosition();
     );
 }
     void EndGame(bool isVictory)
-{
-    gameOverPanel.SetActive(true);
-    if (isVictory)
     {
-        VictoryText.gameObject.SetActive(true);  // Показуємо текст перемоги
-        FailureText.gameObject.SetActive(false); // Ховаємо текст поразки
-    }
-    else
-    {
-        VictoryText.gameObject.SetActive(false);  // Ховаємо текст перемоги
-        FailureText.gameObject.SetActive(true);  // Показуємо текст поразки
-    }
-    indicator.gameObject.SetActive(false);
-    fish.gameObject.SetActive(false);
-    restartButton.gameObject.SetActive(true);  // Показуємо кнопку перезапуску
-    mainMenuButton.gameObject.SetActive(true); // Показуємо кнопку повернення в головне меню
+        gameOverPanel.SetActive(true);
+        if (isVictory)
+        {
+            VictoryText.gameObject.SetActive(true);  // Показуємо текст перемоги
+            FailureText.gameObject.SetActive(false); // Ховаємо текст поразки
+        }
+        else
+        {
+            VictoryText.gameObject.SetActive(false);  // Ховаємо текст перемоги
+            FailureText.gameObject.SetActive(true);  // Показуємо текст поразки
+        }
+        indicator.gameObject.SetActive(false);
+        fish.gameObject.SetActive(false);
+        restartButton.gameObject.SetActive(true);  // Показуємо кнопку перезапуску
+        mainMenuButton.gameObject.SetActive(true); // Показуємо кнопку повернення в головне меню
+        
 }
-public void RestartGame()
-{
-    remainingTime = gameTime;
-    resultText.gameObject.SetActive(false);
-    gameOverPanel.SetActive(false);
-    restartButton.gameObject.SetActive(false);
-    mainMenuButton.gameObject.SetActive(false);
-    // Скидаємо індикатор
-    indicator.gameObject.SetActive(true);
-    if (indicatorInside != null)
+    public void RestartGame()
     {
-        linePosition = -263f; // Скидання
-        SetIndicatorPosition(); // Оновлення
+        remainingTime = gameTime;
+        resultText.gameObject.SetActive(false);
+        gameOverPanel.SetActive(false);
+        restartButton.gameObject.SetActive(false);
+        mainMenuButton.gameObject.SetActive(false);
+        // Скидаємо індикатор
+        indicator.gameObject.SetActive(true);
+        if (indicatorInside != null)
+        {
+            linePosition = -263f; // Скидання
+            SetIndicatorPosition(); // Оновлення
+        }
+        // Нова позиція рибки
+        fishPosition = Random.Range(0f, 1f); // Скидання
+        SetFishPosition();
+        fish.gameObject.SetActive(true);
+        // Скидаємо стани
+        isFishing = true;
+        VictoryText.gameObject.SetActive(false);
+        FailureText.gameObject.SetActive(false);
+        startButton.gameObject.SetActive(false);
+        holdTime = 0f;
+        if (holdProgressBar != null)
+            holdProgressBar.fillAmount = 0f;
     }
-    // Нова позиція рибки
-    fishPosition = Random.Range(0f, 1f); // Скидання
-    SetFishPosition();
-    fish.gameObject.SetActive(true);
-    // Скидаємо стани
-    isFishing = true;
-    VictoryText.gameObject.SetActive(false);
-    FailureText.gameObject.SetActive(false);
-    startButton.gameObject.SetActive(false);
-    holdTime = 0f;
-if (holdProgressBar != null)
-    holdProgressBar.fillAmount = 0f;
-}
+
+        public void ExitToMainMenu()
+    {
+        
+        GlobalGameState.comingFromMiniGame = true;
+        GlobalGameState.spawnPosition = new Vector2(11.5277f, 23.33893f);
+
+        // load main scene
+        SceneManager.LoadScene("Main Game Map");
+    }
     public void GoToMainMenu()
     {
         gameOverPanel.SetActive(false);
         resultText.gameObject.SetActive(false);
         startButton.gameObject.SetActive(true);  // Показуємо кнопку старту
-        SceneManager.LoadScene("Main Game Map");
+        ExitToMainMenu();
     }
 }
