@@ -68,6 +68,7 @@
     <Compile Include="Assets\Scripts\Games codes\Poker\DicePokerManager.cs" />
     <Compile Include="Assets\Scripts\Games codes\MainScene\BootstrapLoader.cs" />
     <Compile Include="Assets\Scripts\Games codes\FindPair\FindPair_cards.cs" />
+    <Compile Include="Assets\Scripts\Games codes\MainScene\MusicManager.cs" />
     <Compile Include="Assets\Scripts\Currency codes\CurrencyManager.cs" />
     <Compile Include="Assets\Scripts\Currency codes\CurrencyUI.cs" />
     <Compile Include="Assets\Scripts\Games codes\BetUi.cs" />
