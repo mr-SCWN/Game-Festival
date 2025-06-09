@@ -14,13 +14,13 @@ public class FishingController : MonoBehaviour
     public Button mainMenuButton; // Кнопка для повернення в головне меню
     public Button startButton;  // Кнопка старту гри
     public TextMeshProUGUI VictoryText; // Текст для перемоги
-public TextMeshProUGUI FailureText; // Текст для поразки
-public Image holdProgressBar; // 🔁 Сюди підтягнемо прогрес-бар з UI
-public AudioSource audioSource;
-public AudioClip victorySound;
-private float holdTime = 0f;
-private float requiredHoldTime = 5f;
-private float fishMoveTimer = 0f;
+    public TextMeshProUGUI FailureText; // Текст для поразки
+    public Image holdProgressBar; // 🔁 Сюди підтягнемо прогрес-бар з UI
+    public AudioSource audioSource;
+    public AudioClip victorySound;
+    private float holdTime = 0f;
+    private float requiredHoldTime = 5f;
+    private float fishMoveTimer = 0f;
     private bool isFishing = false;
     private float fishPosition;
     private float linePosition = -2.94f;
@@ -28,12 +28,15 @@ private float fishMoveTimer = 0f;
     private float gameTime = 10f;  // Таймер 10 секунд
     private float remainingTime;  // Залишковий час для гри
     private float fishStartX;
-private float fishTargetY = 0.5f;
-private float fishChangeInterval = 0.8f; // Було 1.5f
-private float fishChangeTimer = 0f;
-private float fishSmoothSpeed = 25f; // Було 9, тепер швидше
+    private float fishTargetY = 0.5f;
+    private float fishChangeInterval = 0.8f; // Було 1.5f
+    private float fishChangeTimer = 0f;
+    private float fishSmoothSpeed = 25f; // Було 9, тепер швидше
+    private bool rewardGiven = false;
     void Start()
     {
+        rewardGiven = false;
+
         remainingTime = gameTime;  // Ініціалізуємо таймер
         gameOverPanel.SetActive(false);  // Панель результатів прихована
         resultText.gameObject.SetActive(false); // Текст результату не показується
@@ -124,59 +127,59 @@ private float fishSmoothSpeed = 25f; // Було 9, тепер швидше
         SetIndicatorPosition();
         SetFishPosition(); // Зміщення рибки при зміні індикатора
     }
-   void CheckIfFishCaught()
-{
-    float fishY = fish.anchoredPosition.y;
-    float indicatorY = indicatorInside.anchoredPosition.y;
-
-    float threshold = 50f; // 👈 розширена зона попадання
-
-    if (Mathf.Abs(fishY - indicatorY) < threshold)
+    void CheckIfFishCaught()
     {
-        holdTime += Time.deltaTime;
+        float fishY = fish.anchoredPosition.y;
+        float indicatorY = indicatorInside.anchoredPosition.y;
 
-        if (holdProgressBar != null)
-            holdProgressBar.fillAmount = holdTime / requiredHoldTime;
+        float threshold = 50f; // 👈 розширена зона попадання
 
-        if (holdTime >= requiredHoldTime)
+        if (Mathf.Abs(fishY - indicatorY) < threshold)
         {
-            if (audioSource != null && victorySound != null)
-                audioSource.PlayOneShot(victorySound);
-            EndGame(true);
+            holdTime += Time.deltaTime;
+
+            if (holdProgressBar != null)
+                holdProgressBar.fillAmount = holdTime / requiredHoldTime;
+
+            if (holdTime >= requiredHoldTime)
+            {
+                if (audioSource != null && victorySound != null)
+                    audioSource.PlayOneShot(victorySound);
+                EndGame(true);
+            }
+        }
+        else
+        {
+            holdTime = Mathf.Max(holdTime - Time.deltaTime * 2f, 0f);
+
+            if (holdProgressBar != null)
+                holdProgressBar.fillAmount = holdTime / requiredHoldTime;
         }
     }
-    else
+
+    void SetIndicatorPosition()
     {
-        holdTime = Mathf.Max(holdTime - Time.deltaTime * 2f, 0f);
-
-        if (holdProgressBar != null)
-            holdProgressBar.fillAmount = holdTime / requiredHoldTime;
+        if (indicator == null || indicatorInside == null) return;
+        float height = indicator.rect.height;
+        float yOffset = Mathf.Lerp(-height / 2, height / 2, Mathf.InverseLerp(-263f, 229f, linePosition));
+        indicatorInside.anchoredPosition = new Vector2(
+            indicatorInside.anchoredPosition.x,
+            indicator.anchoredPosition.y + yOffset
+        );
     }
-}
-
-   void SetIndicatorPosition()
-{
-    if (indicator == null || indicatorInside == null) return;
-    float height = indicator.rect.height;
-    float yOffset = Mathf.Lerp(-height / 2, height / 2, Mathf.InverseLerp(-263f, 229f, linePosition));
-    indicatorInside.anchoredPosition = new Vector2(
-        indicatorInside.anchoredPosition.x,
-        indicator.anchoredPosition.y + yOffset
-    );
-}
-  void SetFishPosition()
-{
-    if (fish == null || indicator == null) return;
-    float height = indicator.rect.height;
-    float fishYOffset = Mathf.Lerp(-height / 2, height / 2, Mathf.InverseLerp(-263f, 229f, fishPosition));
-    float newY = indicator.anchoredPosition.y + fishYOffset;
-    // Захист від виходу за межі
-    newY = Mathf.Clamp(newY, -263f, 229f);
-    fish.anchoredPosition = new Vector2(
-        fish.anchoredPosition.x,
-        newY
-    );
-}
+    void SetFishPosition()
+    {
+        if (fish == null || indicator == null) return;
+        float height = indicator.rect.height;
+        float fishYOffset = Mathf.Lerp(-height / 2, height / 2, Mathf.InverseLerp(-263f, 229f, fishPosition));
+        float newY = indicator.anchoredPosition.y + fishYOffset;
+        // Захист від виходу за межі
+        newY = Mathf.Clamp(newY, -263f, 229f);
+        fish.anchoredPosition = new Vector2(
+            fish.anchoredPosition.x,
+            newY
+        );
+    }
     void EndGame(bool isVictory)
     {
         gameOverPanel.SetActive(true);
@@ -184,6 +187,12 @@ private float fishSmoothSpeed = 25f; // Було 9, тепер швидше
         {
             VictoryText.gameObject.SetActive(true);  // Показуємо текст перемоги
             FailureText.gameObject.SetActive(false); // Ховаємо текст поразки
+
+            if (!rewardGiven)  // giving reward
+            {
+                GiveFishingReward();
+                rewardGiven = true;
+            }
         }
         else
         {
@@ -194,8 +203,8 @@ private float fishSmoothSpeed = 25f; // Було 9, тепер швидше
         fish.gameObject.SetActive(false);
         restartButton.gameObject.SetActive(true);  // Показуємо кнопку перезапуску
         mainMenuButton.gameObject.SetActive(true); // Показуємо кнопку повернення в головне меню
-        
-}
+
+    }
     public void RestartGame()
     {
         remainingTime = gameTime;
@@ -224,9 +233,9 @@ private float fishSmoothSpeed = 25f; // Було 9, тепер швидше
             holdProgressBar.fillAmount = 0f;
     }
 
-        public void ExitToMainMenu()
+    public void ExitToMainMenu()
     {
-        
+
         GlobalGameState.comingFromMiniGame = true;
         GlobalGameState.spawnPosition = new Vector2(11.5277f, 23.33893f);
 
@@ -239,5 +248,23 @@ private float fishSmoothSpeed = 25f; // Було 9, тепер швидше
         resultText.gameObject.SetActive(false);
         startButton.gameObject.SetActive(true);  // Показуємо кнопку старту
         ExitToMainMenu();
+    }
+    
+    private void GiveFishingReward()
+    {
+        // 1 catch = 1 fish
+        float r = Random.value;
+        if (r < 0.6f)
+        {
+            CurrencyManager.Instance.AddFish("grey", 1);
+        }
+        else if (r < 0.9f)
+        {
+            CurrencyManager.Instance.AddFish("green", 1);
+        }
+        else
+        {
+            CurrencyManager.Instance.AddFish("gold", 1);
+        }
     }
 }
