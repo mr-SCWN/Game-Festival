@@ -7,6 +7,11 @@ using UnityEngine.SceneManagement;
 
 public class TwentyOneManager : MonoBehaviour
 {
+    [Header("Betting UI")]
+    public BetUI betUI;                   
+    public float winCoefficient = 1.4f;   // payout on win
+    public float tieCoefficient = 1.0f;   // payout on tie
+
     [Header("Deck Sprites (0–51)")]
     public Sprite[] cardSprites; // card sprites
 
@@ -42,9 +47,20 @@ public class TwentyOneManager : MonoBehaviour
     private bool playerTurn = true;
     private bool gameOver = false;
     private bool playerBust = false;
-    private bool aiBust     = false;
+    private bool aiBust = false;
+    private int currentBet = 0; 
 
-    void Start()
+        void Start()
+    {
+                // showing Bet window
+        int coins = CurrencyManager.Instance.coin;
+        betUI.Show(coins, bet => {
+            currentBet = bet;                       
+            CurrencyManager.Instance.coin -= bet;      
+            BeginRound();                              
+        });
+    }
+    void BeginRound()
     {
         // 1) build and shuffle deck
         deck = new List<int>();
@@ -71,7 +87,7 @@ public class TwentyOneManager : MonoBehaviour
     {
         if (gameOver) 
         {
-            if (Input.GetKeyDown(KeyCode.Q)) ExitToMain();
+            if (Input.GetKeyDown(KeyCode.Q)) StartCoroutine(FinishAndReturn(false));
             return;
         }
 
@@ -96,7 +112,7 @@ public class TwentyOneManager : MonoBehaviour
 
         // Q also can exit
         if (Input.GetKeyDown(KeyCode.Q))
-            ExitToMain();
+            StartCoroutine(FinishAndReturn(false));
     }
 
     // shuffle in place
@@ -185,33 +201,70 @@ public class TwentyOneManager : MonoBehaviour
     {
         int playerSum = BestSum(playerCards);
         int dealerSum = BestSum(aiCards);
-
+        bool playerWin, playerTie;
         string result;
         if (playerBust && aiBust)
         {
+            playerWin = false; playerTie = true;
             result = "Both BUST—Tie!";
         }
         else if (playerBust)
         {
+            playerWin = false; playerTie = false;
             result = $"You BUST ({playerSum})—Dealer wins!";
         }
         else if (aiBust)
         {
+            playerWin = true;  playerTie = false;
             result = $"Dealer BUST ({dealerSum})—You win!";
         }
         else
         {
             if (dealerSum > playerSum)
+            {
+                playerWin = false; playerTie = false;
                 result = $"Dealer wins ({dealerSum} vs {playerSum})";
+            }
+
             else if (dealerSum < playerSum)
+            {
+                playerWin = true; playerTie = false;
                 result = $"You win! ({playerSum} vs {dealerSum})";
+            }
             else
+            {
+                playerWin = false; playerTie = true;
                 result = $"Tie at {playerSum}";
+            }
+                
         }
 
         infoText.text = result;
         gameOver = true;
-        ExitToMain();
+        StartCoroutine(FinishAndReturn(playerWin, playerTie));
+    }
+
+      IEnumerator FinishAndReturn(bool playerWin, bool playerTie = false)
+    {
+        // delay
+        yield return new WaitForSeconds(1.5f);
+
+        
+        if (playerWin)
+        {
+            int payout = Mathf.FloorToInt(currentBet * winCoefficient);
+            CurrencyManager.Instance.AddCoin(payout);
+        }
+        else if (playerTie)
+        {
+            int refund = Mathf.FloorToInt(currentBet * tieCoefficient);
+            CurrencyManager.Instance.AddCoin(refund);
+        }
+        
+
+        GlobalGameState.comingFromMiniGame = true;
+        GlobalGameState.spawnPosition      = new Vector2(-15.73607f, 7.956881f);
+        SceneManager.LoadScene("Main Game Map");
     }
 
     // compute best sum for a hand of images, auto Ace=1 or 11

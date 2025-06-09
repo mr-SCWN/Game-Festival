@@ -70,6 +70,7 @@
     <Compile Include="Assets\Scripts\Games codes\FindPair\FindPair_cards.cs" />
     <Compile Include="Assets\Scripts\Currency codes\CurrencyManager.cs" />
     <Compile Include="Assets\Scripts\Currency codes\CurrencyUI.cs" />
+    <Compile Include="Assets\Scripts\Games codes\BetUi.cs" />
     <Compile Include="Assets\Scripts\Games codes\MainScene\MainSceneManager.cs" />
     <Compile Include="Assets\Scripts\Games codes\FindPair\FindPair_logic.cs" />
     <Compile Include="Assets\Scripts\Trigger codes\MiniGameTrigger.cs" />
