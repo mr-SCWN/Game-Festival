@@ -3,9 +3,15 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using TMPro;
+using System.Collections;
 
 public class MoreLessGameManager : MonoBehaviour
 {
+    [Header("Betting UI")]
+    public BetUI betUI;                   
+    public float winCoefficient = 1.8f;   // payout on win
+    public float tieCoefficient = 1.0f;   // payout on tie
+
     [Header("UI Elements")]
     public Image currentCardImage;
     public Image deckImage;
@@ -40,8 +46,21 @@ public class MoreLessGameManager : MonoBehaviour
 
     private bool playerTurn;
     private int currentSelection; // 0 = More, 1 = Less
+    private int currentBet;
 
-    void Start()
+ void Start()
+    {
+        // showing bet window
+        int coins = CurrencyManager.Instance.coin;
+        betUI.Show(coins, bet =>
+        {
+            currentBet = bet;
+            CurrencyManager.Instance.AddCoin(-bet);
+            BeginGame();
+        });
+    }
+
+    void BeginGame()
     {
         InitDeck();
         ShuffleDeck();
@@ -54,6 +73,7 @@ public class MoreLessGameManager : MonoBehaviour
         PositionCursor();
         infoText.text = "Your turn: A/D to select, E to confirm.";
     }
+
 
     void InitDeck()
     {
@@ -125,9 +145,7 @@ public class MoreLessGameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            GlobalGameState.comingFromMiniGame = true;
-            GlobalGameState.spawnPosition = new Vector2(-21.97706f, 1.37644f);
-            SceneManager.LoadScene("Main Game Map");
+            StartCoroutine(FinishAndReturn(false, false));
         }
     }
 
@@ -160,7 +178,13 @@ public class MoreLessGameManager : MonoBehaviour
 
         currentCard = next;
         UpdateAllUI();
-        CheckEnd();
+        if (currentIndex >= deck.Count)
+        {
+            // end of the game
+            bool tie = (playerScore == aiScore);
+            bool win = (playerScore > aiScore);
+            StartCoroutine(FinishAndReturn(win, tie));
+        }
     }
 
     int GetRank(int cardIndex)
@@ -232,28 +256,34 @@ public class MoreLessGameManager : MonoBehaviour
         UpdateAllUI();
 
         playerTurn = true;
-        CheckEnd();
+        if (currentIndex >= deck.Count)
+        {
+            bool tie = (playerScore == aiScore);
+            bool win = (playerScore > aiScore);
+            StartCoroutine(FinishAndReturn(win, tie));
+        }
     }
 
 
-    void CheckEnd()
-    {
-        if (currentIndex >= deck.Count)
+
+    IEnumerator FinishAndReturn(bool playerWin, bool playerTie)
         {
-            string res = playerScore > aiScore ? "You Win!" :
-                         playerScore < aiScore ? "Opponent Wins!" : "Draw!";
-            infoText.text = $"Game Over!\nPlayer {playerScore} – Opponent {aiScore}\n{res}";
-            // block moving
-            playerTurn = false;
+            yield return new WaitForSeconds(2.5f);
+
+            if (playerWin)
+            {
+                int payout = Mathf.FloorToInt(currentBet * winCoefficient);
+                CurrencyManager.Instance.AddCoin(payout);
+            }
+            else if (playerTie)
+            {
+                int refund = Mathf.FloorToInt(currentBet * tieCoefficient);
+                CurrencyManager.Instance.AddCoin(refund);
+            }
+            
 
             GlobalGameState.comingFromMiniGame = true;
             GlobalGameState.spawnPosition = new Vector2(-21.97706f, 1.37644f);
             SceneManager.LoadScene("Main Game Map");
         }
-    }
-
-    void ExitToMain()
-    {
-        SceneManager.LoadScene("MainGameScene");
-    }
 }

@@ -7,6 +7,11 @@ using UnityEngine.SceneManagement;
 
 public class DicePokerManager : MonoBehaviour
 {
+    [Header("Betting UI")]
+    public BetUI betUI;
+    public float winCoefficient = 1.5f;  
+    public float tieCoefficient = 1.0f; 
+
     [Header("Player Dice UI")]
     public Image[] playerDiceImages = new Image[5];
     public Button[] playerDiceButtons = new Button[5];  // buttons on same GameObjects
@@ -35,12 +40,25 @@ public class DicePokerManager : MonoBehaviour
     int[] playerDice, aiDice;
     bool[] playerMark;
     int playerRerolls, aiRerolls, currentRoll;
+    private int currentBet;
 
-    void Start()
+     void Start()
     {
+        // Сначала показываем окно ставки
+        int coins = CurrencyManager.Instance.coin;
+        betUI.Show(coins, bet =>
+        {
+            currentBet = bet;
+            CurrencyManager.Instance.AddCoin(-bet);
+            BeginGame();
+        });
+    }
 
+    void BeginGame()
+    {
+        // инициализация игры
         playerDice = new int[5];
-        aiDice = new int[5];
+        aiDice     = new int[5];
         playerMark = new bool[5];
 
         playerRerolls = aiRerolls = maxRerolls;
@@ -51,22 +69,24 @@ public class DicePokerManager : MonoBehaviour
         RefreshUI();
         UpdateRerollUI();
 
+        rerollButton.onClick.RemoveAllListeners();
         rerollButton.onClick.AddListener(OnPlayerReroll);
-
         for (int i = 0; i < 5; i++)
         {
-            int idx = i; // capture
+            int idx = i;
+            playerDiceButtons[i].onClick.RemoveAllListeners();
             playerDiceButtons[i].onClick.AddListener(() => ToggleDice(idx));
         }
 
-        infoText.text = "Roll #1 → select dice and press Re-roll";
+        infoText.text = $"Roll #1 → select dice and press Re-roll";
     }
-    void Update()
+    
+        void Update()
     {
         // Exit on Q at any time
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            ExitToMainMap();
+            StartCoroutine(FinishAndReturn(false, false));
         }
     }
 
@@ -165,6 +185,8 @@ public class DicePokerManager : MonoBehaviour
     {
         int pRank = EvaluateHand(playerDice);
         int aRank = EvaluateHand(aiDice);
+        bool win = pRank > aRank;
+        bool tie = pRank == aRank;
 
         if (pRank > aRank) infoText.text = "You Win!";
         else if (pRank < aRank) infoText.text = "AI Wins!";
@@ -173,7 +195,7 @@ public class DicePokerManager : MonoBehaviour
         // disabled further rerolls
         rerollButton.interactable = false;
 
-        ExitToMainMap();
+        StartCoroutine(FinishAndReturn(win, tie));
     }
 
     // rank hands: 1=High,2=Pair,3=TwoPair,4=Three,5=FullHouse,6=Str15,7=Str26,8=Four,9=Five
@@ -206,10 +228,23 @@ public class DicePokerManager : MonoBehaviour
         return 1;
     }
     
-        void ExitToMainMap()
+     IEnumerator FinishAndReturn(bool playerWin, bool playerTie)
     {
+        yield return new WaitForSeconds(2.5f);
+
+        if (playerWin)
+        {
+            int payout = Mathf.FloorToInt(currentBet * winCoefficient);
+            CurrencyManager.Instance.AddCoin(payout);
+        }
+        else if (playerTie)
+        {
+            int refund = Mathf.FloorToInt(currentBet * tieCoefficient);
+            CurrencyManager.Instance.AddCoin(refund);
+        }
+
         GlobalGameState.comingFromMiniGame = true;
-        GlobalGameState.spawnPosition = new Vector2(-22.02046f, 8.365251f);
+        GlobalGameState.spawnPosition      = new Vector2(-22.02046f, 8.365251f);
         SceneManager.LoadScene("Main Game Map");
     }
 
