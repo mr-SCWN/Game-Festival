@@ -10,11 +10,10 @@ public class CurrencyUI : MonoBehaviour
     public TextMeshProUGUI green_fish;
     public TextMeshProUGUI gold_fish;
 
-    void toUpdate () {
-        coin.text = CurrencyManager.Instance.coin.ToString();
-        grey_fish.text = CurrencyManager.Instance.grey_fish.ToString();
+    void Update() {
+        coin.text       = CurrencyManager.Instance.coin.ToString();
+        grey_fish.text  = CurrencyManager.Instance.grey_fish.ToString();
         green_fish.text = CurrencyManager.Instance.green_fish.ToString();
-        gold_fish.text = CurrencyManager.Instance.gold_fish.ToString();
-        
+        gold_fish.text  = CurrencyManager.Instance.gold_fish.ToString();
     }
 } 
