@@ -194,9 +194,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coin: 100
-  grey_fish: 0
-  green_fish: 0
-  gold_fish: 0
+  grey_fish: 100
+  green_fish: 100
+  gold_fish: 100
 --- !u!4 &1187504808
 Transform:
   m_ObjectHideFlags: 0
