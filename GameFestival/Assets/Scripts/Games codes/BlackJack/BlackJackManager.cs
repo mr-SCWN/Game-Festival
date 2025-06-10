@@ -247,7 +247,7 @@ public class TwentyOneManager : MonoBehaviour
       IEnumerator FinishAndReturn(bool playerWin, bool playerTie = false)
     {
         // delay
-        yield return new WaitForSeconds(4.5f);
+        yield return new WaitForSeconds(3.0f);
 
         
         if (playerWin)

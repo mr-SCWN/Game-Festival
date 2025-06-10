@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Games codes\Poker\DicePokerManager.cs" />
+    <Compile Include="Assets\Scripts\Games codes\MainScene\SkinsSlotUI.cs" />
     <Compile Include="Assets\Scripts\Games codes\MainScene\BootstrapLoader.cs" />
     <Compile Include="Assets\Scripts\Games codes\FindPair\FindPair_cards.cs" />
     <Compile Include="Assets\Scripts\Games codes\MainScene\MusicManager.cs" />
@@ -77,11 +78,13 @@
     <Compile Include="Assets\Scripts\Games codes\MainScene\MainSceneManager.cs" />
     <Compile Include="Assets\Scripts\Games codes\FindPair\FindPair_logic.cs" />
     <Compile Include="Assets\Scripts\Trigger codes\MiniGameTrigger.cs" />
+    <Compile Include="Assets\Scripts\Games codes\MainScene\ShopTrigger.cs" />
     <Compile Include="Assets\Scripts\Currency codes\ExchangeTrigger.cs" />
     <Compile Include="Assets\Scripts\Player codes\SkinManager.cs" />
     <Compile Include="Assets\Scripts\Games codes\fishing\FishingInteraction.cs" />
     <Compile Include="Assets\Scripts\Player codes\SkinData.cs" />
     <Compile Include="Assets\Scripts\Player codes\GlobalGameState.cs" />
+    <Compile Include="Assets\Scripts\Games codes\MainScene\ShopManager.cs" />
     <Compile Include="Assets\Scripts\Games codes\fishing\FishingController.cs" />
     <Compile Include="Assets\Scripts\Player codes\PlayerController.cs" />
     <Compile Include="Assets\Scripts\Games codes\MoreLess\MoreLessGameManager.cs" />
