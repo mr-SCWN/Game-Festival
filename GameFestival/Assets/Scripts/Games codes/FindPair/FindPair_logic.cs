@@ -211,7 +211,7 @@ public class FindPair_logic : MonoBehaviour
         IEnumerator FinishAndReturn(bool playerWin)
     {
         canFlip = false;
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(4.5f);
 
         if (playerWin)
         {
