@@ -10,7 +10,10 @@ public class BootstrapLoader : MonoBehaviour
     {
         PlayerPrefs.DeleteKey("SkinPurchased");
         PlayerPrefs.DeleteKey("SkinCount");
+        PlayerPrefs.DeleteKey("SkinSelected"); 
         PlayerPrefs.Save();
+
+        DontDestroyOnLoad(gameObject);
     }
 
     void Start()
