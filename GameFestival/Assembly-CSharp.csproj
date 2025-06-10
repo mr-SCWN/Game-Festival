@@ -70,6 +70,7 @@
     <Compile Include="Assets\Scripts\Games codes\FindPair\FindPair_cards.cs" />
     <Compile Include="Assets\Scripts\Games codes\MainScene\MusicManager.cs" />
     <Compile Include="Assets\Scripts\Currency codes\ExchangeUI.cs" />
+    <Compile Include="Assets\Scripts\Player codes\PlayerAnimation.cs" />
     <Compile Include="Assets\Scripts\Currency codes\CurrencyManager.cs" />
     <Compile Include="Assets\Scripts\Currency codes\CurrencyUI.cs" />
     <Compile Include="Assets\Scripts\Games codes\BetUi.cs" />
@@ -77,7 +78,9 @@
     <Compile Include="Assets\Scripts\Games codes\FindPair\FindPair_logic.cs" />
     <Compile Include="Assets\Scripts\Trigger codes\MiniGameTrigger.cs" />
     <Compile Include="Assets\Scripts\Currency codes\ExchangeTrigger.cs" />
+    <Compile Include="Assets\Scripts\Player codes\SkinManager.cs" />
     <Compile Include="Assets\Scripts\Games codes\fishing\FishingInteraction.cs" />
+    <Compile Include="Assets\Scripts\Player codes\SkinData.cs" />
     <Compile Include="Assets\Scripts\Player codes\GlobalGameState.cs" />
     <Compile Include="Assets\Scripts\Games codes\fishing\FishingController.cs" />
     <Compile Include="Assets\Scripts\Player codes\PlayerController.cs" />
