@@ -84,7 +84,7 @@ public class FindPair_logic : MonoBehaviour
                 var card = Instantiate(cardPrefab, transform);
                 float x = c * spacingX - (columns - 1) * spacingX / 2;
                 float y = -r * spacingY + (rows - 1) * spacingY / 2;
-                card.transform.localPosition = new Vector3(x, y, 0);
+                card.transform.localPosition = new Vector3(x-2f, y, 0);
                 card.CardID = deck[idx];
                 card.frontSprite = cardFaces[deck[idx]];
                 card.backSprite = cardBack;
